@@ -208,7 +208,10 @@ async function remove(session: SurveySession) {
           <template #default="scope">{{ scope.row.session.date }}</template>
         </el-table-column>
         <el-table-column label="鸟点" width="150">
-          <template #default="scope">{{ scope.row.siteName }}</template>
+          <template #default="scope">
+            <div>{{ scope.row.siteName }}</div>
+            <div v-if="scope.row.session.originSite" class="origin-site">原：{{ scope.row.session.originSite.name }}</div>
+          </template>
         </el-table-column>
         <el-table-column label="起止时间" width="120">
           <template #default="scope">{{ scope.row.session.startedAt }}~{{ scope.row.session.endedAt }}</template>
@@ -291,7 +294,10 @@ async function remove(session: SurveySession) {
     <el-dialog v-if="detailId" :model-value="true" :title="`批次统计 · ${detail?.session.sessionNo ?? ''}`" width="560px" @close="detailId = null">
       <template v-if="detail">
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="鸟点">{{ detail.siteName }}</el-descriptions-item>
+          <el-descriptions-item label="鸟点">
+            {{ detail.siteName }}
+            <span v-if="detail.session.originSite" class="origin-site">（原：{{ detail.session.originSite.name }}）</span>
+          </el-descriptions-item>
           <el-descriptions-item label="日期">{{ detail.session.date }}</el-descriptions-item>
           <el-descriptions-item label="起止">{{ detail.session.startedAt }}~{{ detail.session.endedAt }}</el-descriptions-item>
           <el-descriptions-item label="观测条件">
@@ -338,5 +344,10 @@ async function remove(session: SurveySession) {
 }
 .block {
   border-radius: 8px;
+}
+.origin-site {
+  font-size: 12px;
+  color: #b08a4f;
+  line-height: 1.4;
 }
 </style>

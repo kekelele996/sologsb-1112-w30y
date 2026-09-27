@@ -1,3 +1,5 @@
+import type { SiteSnapshot } from './bird-site';
+
 /** 年龄 */
 export type BirdAge = '幼' | '亚成' | '成';
 
@@ -31,6 +33,8 @@ export interface RingRecord {
   siteId: string;
   /** 调查批次 id */
   sessionId: string;
+  /** 并档迁入前的原鸟点快照（历史留痕，不随保留点调整而变；非迁入记录无此字段） */
+  originSite?: SiteSnapshot;
   /** 备注 */
   remark?: string;
 }

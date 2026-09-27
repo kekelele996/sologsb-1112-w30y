@@ -1,3 +1,5 @@
+import type { SiteSnapshot } from './bird-site';
+
 /** 调查批次 */
 export interface SurveySession {
   id: string;
@@ -7,6 +9,8 @@ export interface SurveySession {
   date: string;
   /** 鸟点 id */
   siteId: string;
+  /** 并档迁入前的原鸟点快照（历史留痕，不随保留点调整而变；非迁入批次无此字段） */
+  originSite?: SiteSnapshot;
   /** 开始时间 HH:mm */
   startedAt: string;
   /** 结束时间 HH:mm */

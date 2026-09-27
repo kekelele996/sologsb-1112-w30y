@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus';
 import SiteMap from '../components/common/SiteMap.vue';
 import FilterBar from '../components/common/FilterBar.vue';
 import EmptyPanel from '../components/common/EmptyPanel.vue';
+import SiteMergeDialog from '../components/SiteMergeDialog.vue';
 import { useSiteFilter } from '../hooks/useSiteFilter';
 import { useSiteStore } from '../stores/siteStore';
 import { useAmap } from '../hooks/useAmap';
@@ -17,6 +18,7 @@ const amap = useAmap();
 const filter = useSiteFilter();
 
 const dialogVisible = ref(false);
+const mergeVisible = ref(false);
 const editingId = ref('');
 const selectedId = ref('');
 const formRef = ref<FormInstance>();
@@ -48,6 +50,14 @@ const rules: FormRules = {
 
 const visible = computed(() => filter.apply(siteStore.sites, sessionStore.sessions));
 const selected = computed(() => siteStore.sites.find((site) => site.id === selectedId.value));
+
+/** 并档后待并点被移除，若它正是当前选中点则清掉选中态 */
+watch(
+  () => siteStore.sites,
+  (sites) => {
+    if (selectedId.value && !sites.some((site) => site.id === selectedId.value)) selectedId.value = '';
+  },
+);
 
 /** 与已有点位的最小间距（km），用于提示点位过近 */
 const nearest = computed(() => {
@@ -137,6 +147,7 @@ async function remove(site: BirdSite) {
 
     <div class="toolbar">
       <el-button type="primary" @click="openCreate">登记鸟点</el-button>
+      <el-button :disabled="siteStore.sites.length < 2" @click="mergeVisible = true">并档合并</el-button>
       <el-tag :type="amap.keyPresent ? 'success' : 'info'" effect="plain">
         高德 key：{{ amap.keyPresent ? '已配置' : '未配置（网格模式）' }}
       </el-tag>
@@ -238,6 +249,8 @@ async function remove(site: BirdSite) {
         <el-button type="primary" @click="submit">保存</el-button>
       </template>
     </el-dialog>
+
+    <SiteMergeDialog v-model="mergeVisible" />
   </div>
 </template>
 

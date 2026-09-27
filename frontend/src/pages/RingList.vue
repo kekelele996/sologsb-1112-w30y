@@ -227,8 +227,11 @@ const historyRows = computed(() => ringStore.historyOf(historyRingNo.value));
           </template>
         </el-table-column>
         <el-table-column prop="ringer" label="环志人" width="90" />
-        <el-table-column label="鸟点" width="140">
-          <template #default="scope">{{ siteStore.siteName(scope.row.siteId) }}</template>
+        <el-table-column label="鸟点" width="150">
+          <template #default="scope">
+            <div>{{ siteStore.siteName(scope.row.siteId) }}</div>
+            <div v-if="scope.row.originSite" class="origin-site">原：{{ scope.row.originSite.name }}</div>
+          </template>
         </el-table-column>
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
@@ -306,7 +309,7 @@ const historyRows = computed(() => ringStore.historyOf(historyRingNo.value));
       </template>
     </el-dialog>
 
-    <el-dialog v-model="historyVisible" :title="`环号历史记录 · ${historyRingNo}`" width="720px">
+    <el-dialog v-model="historyVisible" :title="`环号历史记录 · ${historyRingNo}`" width="860px">
       <el-table :data="historyRows" size="small" border>
         <el-table-column prop="ringNo" label="环号" width="110" />
         <el-table-column prop="speciesCn" label="鸟种" width="110" />
@@ -316,6 +319,14 @@ const historyRows = computed(() => ringStore.historyOf(historyRingNo.value));
         <el-table-column prop="status" label="状态" width="90" />
         <el-table-column prop="netNo" label="网号" width="100" />
         <el-table-column prop="ringer" label="环志人" width="90" />
+        <el-table-column label="鸟点" min-width="150">
+          <template #default="scope">
+            <div>{{ siteStore.siteName(scope.row.siteId) }}</div>
+            <div v-if="scope.row.originSite" class="origin-site">
+              原：{{ scope.row.originSite.name }}（{{ scope.row.originSite.lng }}°E, {{ scope.row.originSite.lat }}°N）
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="remark" label="备注" show-overflow-tooltip />
       </el-table>
       <template #footer>
@@ -348,5 +359,10 @@ const historyRows = computed(() => ringStore.historyOf(historyRingNo.value));
 }
 .ring-form {
   margin-top: 10px;
+}
+.origin-site {
+  font-size: 12px;
+  color: #b08a4f;
+  line-height: 1.4;
 }
 </style>

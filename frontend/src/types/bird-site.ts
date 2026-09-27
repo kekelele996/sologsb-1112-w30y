@@ -20,6 +20,23 @@ export interface BirdSite {
   note?: string;
 }
 
+/**
+ * 原鸟点快照：并档迁入记录时留存的原鸟点名称与坐标。
+ * 作为历史留痕随记录保存，之后调整保留点位置 / 名称也不会改写这些快照。
+ */
+export interface SiteSnapshot {
+  /** 原鸟点 id（并档后该鸟点已从台账移除，仅作溯源） */
+  siteId: string;
+  /** 原点位编号 */
+  siteNo: string;
+  /** 原点位名称 */
+  name: string;
+  /** 原经度 */
+  lng: number;
+  /** 原纬度 */
+  lat: number;
+}
+
 export const HABITATS: Habitat[] = ['芦苇湿地', '滩涂', '次生林', '农田', '城市绿地'];
 
 /** 生境配色（地图标记与 SVG 网格共用） */
