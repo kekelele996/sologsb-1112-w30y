@@ -1,6 +1,21 @@
 /** 生境类型 */
 export type Habitat = '芦苇湿地' | '滩涂' | '次生林' | '农田' | '城市绿地';
 
+/**
+ * 鸟点历史快照：并档时随迁入记录固化下来的原鸟点信息。
+ * 调整保留点的名称 / 坐标不会回写这些快照，历史记录始终显示并档当时的原鸟点。
+ */
+export interface SiteSnapshot {
+  /** 原点位编号 */
+  siteNo: string;
+  /** 原点位名称 */
+  name: string;
+  /** 原经度 */
+  lng: number;
+  /** 原纬度 */
+  lat: number;
+}
+
 /** 鸟点 */
 export interface BirdSite {
   id: string;

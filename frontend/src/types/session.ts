@@ -1,3 +1,5 @@
+import type { SiteSnapshot } from './bird-site';
+
 /** 调查批次 */
 export interface SurveySession {
   id: string;
@@ -19,6 +21,8 @@ export interface SurveySession {
   windForce: number;
   /** 是否已关闭（关闭后出统计） */
   closed: boolean;
+  /** 并档迁入批次：原鸟点快照（编号 / 名称 / 坐标），不随后续点位编辑而变化 */
+  originSite?: SiteSnapshot;
   /** 主调查人 */
   leader: string;
   /** 备注 */

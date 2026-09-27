@@ -11,6 +11,7 @@ import { useSiteStore } from '../stores/siteStore';
 import { useSessionStore } from '../stores/sessionStore';
 import { BIRD_AGES, RING_STATUSES, STATUS_COLOR, type BirdAge, type RingRecord, type RingStatus } from '../types/ring-record';
 import { formatDate } from '../utils/format';
+import { formatOriginSite } from '../utils/mergeSites';
 import { speciesCount } from '../utils/stats';
 
 const route = useRoute();
@@ -228,7 +229,16 @@ const historyRows = computed(() => ringStore.historyOf(historyRingNo.value));
         </el-table-column>
         <el-table-column prop="ringer" label="环志人" width="90" />
         <el-table-column label="鸟点" width="140">
-          <template #default="scope">{{ siteStore.siteName(scope.row.siteId) }}</template>
+          <template #default="scope">
+            <div>{{ siteStore.siteName(scope.row.siteId) }}</div>
+            <el-tooltip
+              v-if="scope.row.originSite"
+              :content="`原鸟点：${formatOriginSite(scope.row.originSite)}`"
+              placement="top"
+            >
+              <el-tag type="warning" size="small" effect="plain" class="origin-tag">并档迁入 · {{ scope.row.originSite.siteNo }}</el-tag>
+            </el-tooltip>
+          </template>
         </el-table-column>
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
@@ -306,17 +316,36 @@ const historyRows = computed(() => ringStore.historyOf(historyRingNo.value));
       </template>
     </el-dialog>
 
-    <el-dialog v-model="historyVisible" :title="`环号历史记录 · ${historyRingNo}`" width="720px">
+    <el-dialog v-model="historyVisible" :title="`环号历史记录 · ${historyRingNo}`" width="820px">
+      <el-alert
+        v-if="historyRows.some((row) => row.originSite)"
+        type="info"
+        :closable="false"
+        show-icon
+        title="带「原鸟点」标记的为并档迁入记录，显示的名称与坐标是并档当时的历史快照，调整保留点位置不会改变它。"
+        class="origin-alert"
+      />
       <el-table :data="historyRows" size="small" border>
         <el-table-column prop="ringNo" label="环号" width="110" />
-        <el-table-column prop="speciesCn" label="鸟种" width="110" />
-        <el-table-column label="环志日期" width="120">
+        <el-table-column prop="speciesCn" label="鸟种" width="100" />
+        <el-table-column label="环志日期" width="110">
           <template #default="scope">{{ formatDate(scope.row.ringDate) }}</template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" width="90" />
-        <el-table-column prop="netNo" label="网号" width="100" />
-        <el-table-column prop="ringer" label="环志人" width="90" />
-        <el-table-column prop="remark" label="备注" show-overflow-tooltip />
+        <el-table-column prop="status" label="状态" width="80" />
+        <el-table-column prop="netNo" label="网号" width="90" />
+        <el-table-column prop="ringer" label="环志人" width="80" />
+        <el-table-column label="现鸟点" width="120">
+          <template #default="scope">{{ siteStore.siteName(scope.row.siteId) }}</template>
+        </el-table-column>
+        <el-table-column label="原鸟点（并档快照）" min-width="220">
+          <template #default="scope">
+            <span v-if="!scope.row.originSite" class="origin-empty">—</span>
+            <el-tooltip v-else :content="`经度 ${scope.row.originSite.lng}°E，纬度 ${scope.row.originSite.lat}°N`" placement="top">
+              <el-tag type="warning" size="small" effect="plain">{{ formatOriginSite(scope.row.originSite) }}</el-tag>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column prop="remark" label="备注" min-width="120" show-overflow-tooltip />
       </el-table>
       <template #footer>
         <el-button type="primary" @click="historyVisible = false">关闭</el-button>
@@ -348,5 +377,14 @@ const historyRows = computed(() => ringStore.historyOf(historyRingNo.value));
 }
 .ring-form {
   margin-top: 10px;
+}
+.origin-tag {
+  margin-top: 2px;
+}
+.origin-alert {
+  margin-bottom: 10px;
+}
+.origin-empty {
+  color: #b6c2c0;
 }
 </style>

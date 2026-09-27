@@ -10,6 +10,7 @@ import { useSiteStore } from '../stores/siteStore';
 import { useRingStore } from '../stores/ringStore';
 import { cloudText, type SessionStats, type SurveySession } from '../types/session';
 import { buildSessionStats } from '../utils/stats';
+import { formatOriginSite } from '../utils/mergeSites';
 
 const route = useRoute();
 const sessionStore = useSessionStore();
@@ -207,8 +208,17 @@ async function remove(session: SurveySession) {
         <el-table-column label="日期" width="110">
           <template #default="scope">{{ scope.row.session.date }}</template>
         </el-table-column>
-        <el-table-column label="鸟点" width="150">
-          <template #default="scope">{{ scope.row.siteName }}</template>
+        <el-table-column label="鸟点" min-width="170">
+          <template #default="scope">
+            <div>{{ scope.row.siteName }}</div>
+            <el-tooltip
+              v-if="scope.row.session.originSite"
+              :content="`原鸟点：${formatOriginSite(scope.row.session.originSite)}`"
+              placement="top"
+            >
+              <el-tag type="warning" size="small" effect="plain">并档自 {{ scope.row.session.originSite.siteNo }} · {{ scope.row.session.originSite.name }}</el-tag>
+            </el-tooltip>
+          </template>
         </el-table-column>
         <el-table-column label="起止时间" width="120">
           <template #default="scope">{{ scope.row.session.startedAt }}~{{ scope.row.session.endedAt }}</template>
@@ -293,6 +303,9 @@ async function remove(session: SurveySession) {
         <el-descriptions :column="2" border>
           <el-descriptions-item label="鸟点">{{ detail.siteName }}</el-descriptions-item>
           <el-descriptions-item label="日期">{{ detail.session.date }}</el-descriptions-item>
+          <el-descriptions-item v-if="detail.session.originSite" label="原鸟点（并档快照）" :span="2">
+            {{ formatOriginSite(detail.session.originSite) }}
+          </el-descriptions-item>
           <el-descriptions-item label="起止">{{ detail.session.startedAt }}~{{ detail.session.endedAt }}</el-descriptions-item>
           <el-descriptions-item label="观测条件">
             {{ cloudText(detail.session.cloudCover) }} · {{ detail.session.windForce }} 级风
